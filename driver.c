@@ -71,7 +71,7 @@ int buttonEvent(int button_id,  int value){
 
 int main(int argc, char *argv[]){
     printf("KEY: %d\n",sendKey());
-
+    //test
     int fd,result;
     struct js_event jse;
     fd = open_joystick(argv[1]);
