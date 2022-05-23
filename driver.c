@@ -60,13 +60,39 @@ int sendKey(){
     return keycode;
 }
 
-int joystickEvent(int axis, int value){
+int joystickEvent(int axis, int value, Display *display, int *keymap){
+
     switch(axis){
         //up down
-        case 1: break;
+        case 1: 
+
+            if(value > 0){
+                XTestFakeKeyEvent(display, keymap[0],True,0);
+            }
+            else if(value < 0){
+                XTestFakeKeyEvent(display, keymap[2],True,0);
+            }
+            else{
+                XTestFakeKeyEvent(display, keymap[0],False,0);
+                XTestFakeKeyEvent(display, keymap[2],False,0);
+            }
+            break;
         //lef right
-        case 0: break;
+        case 0: 
+
+            if(value >0){
+                XTestFakeKeyEvent(display, keymap[1],True,0);
+            }
+            else if(value < 0){
+                XTestFakeKeyEvent(display, keymap[3],True,0);
+            }
+            else{
+                XTestFakeKeyEvent(display, keymap[1],False,0);
+                XTestFakeKeyEvent(display, keymap[3],False,0);
+            }
+            break;
     }
+    XFlush(display);
 }
 
 int buttonEvent(int button_id,  int value, Display *display, int *keymap){
@@ -151,7 +177,7 @@ int main(int argc, char *argv[]){
         //printf("Event: time %8u, value %8hd, type: %3u, axis/button: %u\n",jse.time, jse.value, jse.type, jse.number);
         switch(jse.type){
             case 1: buttonEvent(jse.number, jse.value, display, keymap); break;
-            case 2: joystickEvent(jse.number, jse.value); break;
+            case 2: joystickEvent(jse.number, jse.value, display, keymap); break;
         }
         
         }
