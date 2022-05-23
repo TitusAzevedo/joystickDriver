@@ -7,6 +7,17 @@
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
 #include <joystick.h>
+#include <string.h>
+
+//keymap reihenfolge: 
+//0-3 joystick up/right/down/left
+//4-7 button 1-4
+//8-11 menu button -> nur für js0
+
+int js0_keymap[12] = {25,40,38,39,24,26,29,53,9,36,23,50};
+int js1_keymap[8] = {28,43,42,41,27,52,54,55};
+int js2_keymap[8] = {31,46,45,44,30,32,57,58};
+int js3_keymap[8] = {98,102,104,100,10,11,12,13};
 
 
 int open_joystick(char *device_name){
@@ -58,35 +69,96 @@ int joystickEvent(int axis, int value){
     }
 }
 
-int buttonEvent(int button_id,  int value){
+int buttonEvent(int button_id,  int value, Display *display, int *keymap){
+
     switch(button_id){
-        case 1: break;
-        case 2: break;
-        case 3: break;
-        case 4: break;
+        case 1: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[4],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[4],False,0);}
+            break;
+        case 2: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[5],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[5],False,0);}
+            break;
+        case 3: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[6],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[6],False,0);}
+            break;
+        case 4: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[7],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[7],False,0);}
+            break;
+        case 5: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[8],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[8],False,0);}
+            break;
+        case 6: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[9],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[9],False,0);}
+            break;
+        case 7: 
+            if(value == 1){ XTestFakeKeyEvent(display, keymap[10],True,0);}
+            else { XTestFakeKeyEvent(display, keymap[10],False,0);}
+            break;
+        case 8: 
+            if(value == 1){ 
+                XTestFakeKeyEvent(display, keymap[11],True,0);
+                XTestFakeKeyEvent(display, keymap[10],True,0);
+                }
+            else {
+                XTestFakeKeyEvent(display, keymap[11],False,0);
+                XTestFakeKeyEvent(display, keymap[10],False,0);
+                }
+            break;
+    }
+    XFlush(display);
+    
+}
+
+int* getKeymap(char path[]){
+    
+    if(strcmp("/dev/input/js0", path) == 0){
+        return js0_keymap;
+    }
+    if(strcmp("/dev/input/js1", path) == 0){
+        return js1_keymap;
+    }
+    if(strcmp("/dev/input/js2", path) == 0){
+        return js2_keymap;
+    }
+    if(strcmp("/dev/input/js3", path) == 0){
+        return js3_keymap;
     }
 }
 
 
-
 int main(int argc, char *argv[]){
-    printf("KEY: %d\n",sendKey());
-    //test
+
     int fd,result;
     struct js_event jse;
     fd = open_joystick(argv[1]);
 
+    Display *display;
+    display = XOpenDisplay(NULL);
+
+    int* keymap = getKeymap(argv[1]);
+
+
     while(1){
-    result = read_event(fd, &jse);
-    usleep(1000);
-    if(result == 1)
-    printf("Event: time %8u, value %8hd, type: %3u, axis/button: %u\n",jse.time, jse.value, jse.type, jse.number);
-    switch(jse.type){
-        case 1: buttonEvent(jse.number, jse.value); break;
-        case 2: joystickEvent(jse.number, jse.value); break;
-    }
-    
+        result = read_event(fd, &jse);
+        usleep(1000);
+        if(result == 1){
+        //printf("Event: time %8u, value %8hd, type: %3u, axis/button: %u\n",jse.time, jse.value, jse.type, jse.number);
+        switch(jse.type){
+            case 1: buttonEvent(jse.number, jse.value, display, keymap); break;
+            case 2: joystickEvent(jse.number, jse.value); break;
+        }
+        
+        }
+        
     }
 
     return 0;
 }
+
+//gcc -lX11 -lXtst driver.c -o joystick
