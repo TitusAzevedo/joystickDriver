@@ -14,11 +14,11 @@
 //4-7 button 1-4
 //8-11 menu button -> nur für js0
 
-int js0_keymap[12] = {25,40,38,39,24,26,29,53,9,36,23,50};
+int js0_keymap[12] = {25,40,39,38,24,26,29,53,9,36,23,50};
 int js1_keymap[8] = {28,43,42,41,27,52,54,55};
 int js2_keymap[8] = {31,46,45,44,30,32,57,58};
-int js3_keymap[8] = {98,102,104,100,10,11,12,13};
-
+int js3_keymap[8] = {14,15,16,17,10,11,12,13};
+//{80,85,84,83,10,11,12,13};
 
 int open_joystick(char *device_name){
     int joystick_fd = -1;
