@@ -14,11 +14,10 @@
 //4-7 button 1-4
 //8-11 menu button -> nur für js0
 
-int js0_keymap[12] = {25,40,39,38,24,26,29,53,9,36,23,50};
+int js0_keymap[12] = {25,40,39,38,24,26,29,53,9,36,23,64};
 int js1_keymap[8] = {28,43,42,41,27,52,54,55};
 int js2_keymap[8] = {31,46,45,44,30,32,57,58};
 int js3_keymap[8] = {14,15,16,17,10,11,12,13};
-//{80,85,84,83,10,11,12,13};
 
 int open_joystick(char *device_name){
     int joystick_fd = -1;
@@ -127,13 +126,14 @@ int buttonEvent(int button_id,  int value, Display *display, int *keymap){
             else { XTestFakeKeyEvent(display, keymap[10],False,0);}
             break;
         case 8: 
+            // key code 113 = left arrow numpad
             if(value == 1){ 
                 XTestFakeKeyEvent(display, keymap[11],True,0);
-                XTestFakeKeyEvent(display, keymap[10],True,0);
+                XTestFakeKeyEvent(display, 113,True,0);
                 }
             else {
                 XTestFakeKeyEvent(display, keymap[11],False,0);
-                XTestFakeKeyEvent(display, keymap[10],False,0);
+                XTestFakeKeyEvent(display, 113,False,0);
                 }
             break;
     }
